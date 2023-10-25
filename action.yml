@@ -44,13 +44,12 @@ runs:
         last_successful_event: ${{ inputs.last-successful-event }}
         working_directory: ${{ inputs.working-directory }}
         working_id: ${{ inputs.workflow-id }}
-      run: |
-          set -x
-          node "$GITHUB_ACTION_PATH/dist/index.js" "$gh_token" "$main_branch_name" "$error_on_no_successful_workflow" "$last_successful_event" "$working_directory" "$working_id"
+      run: node "$GITHUB_ACTION_PATH/dist/index.js" "$gh_token" "$main_branch_name" "$error_on_no_successful_workflow" "$last_successful_event" "$working_directory" "$working_id"
 
     - name: Log base and head SHAs used for nx affected
       shell: bash
       run: |
+        echo ${{ steps.setSHAs.outputs }}
         echo "Base SHA"
         echo ${{ steps.setSHAs.outputs.base }}
         echo ""
