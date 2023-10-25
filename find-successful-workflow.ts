@@ -117,12 +117,18 @@ function proxyPlugin(octokit: Octokit) {
 async function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, lastSuccessfulEvent) {
   const octokit = new ProxifiedClient();
   process.stdout.write('\n');
-  core.info(`workflow_id ${workflow_id}   \n`);
-  core.info(`run_id ${run_id}   \n`);
-  core.info(`owner ${owner}   \n`);
-  core.info(`repo ${repo}   \n`);
-  core.info(`branch ${branch}   \n`);
-  core.info(`lastSuccessfulEvent ${lastSuccessfulEvent}   \n`);
+  process.stdout.write(`workflow_id ${workflow_id}   \n`);
+  process.stdout.write('\n');
+  process.stdout.write(`run_id ${run_id}   \n`);
+  process.stdout.write('\n');
+  process.stdout.write(`owner ${owner}   \n`);
+  process.stdout.write('\n');
+  process.stdout.write(`repo ${repo}   \n`);
+  process.stdout.write('\n');
+  process.stdout.write(`branch ${branch}   \n`);
+  process.stdout.write('\n');
+  process.stdout.write(`lastSuccessfulEvent ${lastSuccessfulEvent}   \n`);
+  process.stdout.write('\n');
 
   if (!workflow_id) {
     workflow_id = await octokit.request(`GET /repos/${owner}/${repo}/actions/runs/${run_id}`, {
@@ -133,9 +139,11 @@ async function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, la
     }).then(({ data: { workflow_id } }) => workflow_id);
     process.stdout.write('\n');
     process.stdout.write(`Workflow Id not provided. Using workflow '${workflow_id}'\n`);
+    process.stdout.write('\n');
   }
 
-  core.info(`workflow_id ${workflow_id}   \n`);
+  process.stdout.write(`workflow_id ${workflow_id}   \n`);
+  process.stdout.write('\n');
   // fetch all workflow runs on a given repo/branch/workflow with push and success
   const shas = await octokit.request(`GET /repos/${owner}/${repo}/actions/workflows/${workflow_id}/runs`, {
     owner,
@@ -147,7 +155,8 @@ async function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, la
     status: 'success'
   }).then(({ data: { workflow_runs } }) => workflow_runs.map(run => run.head_sha));
 
-  core.info(`shas ${shas}   \n`)
+  process.stdout.write(`shas ${shas}   \n`)
+  process.stdout.write('\n');
 
   return await findExistingCommit(shas);
 }
