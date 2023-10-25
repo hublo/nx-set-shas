@@ -37966,6 +37966,12 @@ function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, lastSucc
         process.stdout.write(`repo ${repo}   \n`);
         process.stdout.write(`branch ${branch}   \n`);
         process.stdout.write(`lastSuccessfulEvent ${lastSuccessfulEvent}   \n`);
+        console.log(`workflow_id ${workflow_id}   \n`);
+        console.log(`run_id ${run_id}   \n`);
+        console.log(`owner ${owner}   \n`);
+        console.log(`repo ${repo}   \n`);
+        console.log(`branch ${branch}   \n`);
+        console.log(`lastSuccessfulEvent ${lastSuccessfulEvent}   \n`);
         if (!workflow_id) {
             workflow_id = yield octokit.request(`GET /repos/${owner}/${repo}/actions/runs/${run_id}`, {
                 owner,
