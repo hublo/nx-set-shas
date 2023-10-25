@@ -116,6 +116,13 @@ function proxyPlugin(octokit: Octokit) {
  */
 async function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, lastSuccessfulEvent) {
   const octokit = new ProxifiedClient();
+  process.stdout.write('\n');
+  process.stdout.write(`workflow_id ${workflow_id}   \n`);
+  process.stdout.write(`run_id ${run_id}   \n`);
+  process.stdout.write(`owner ${owner}   \n`);
+  process.stdout.write(`repo ${repo}   \n`);
+  process.stdout.write(`branch ${branch}   \n`);
+  process.stdout.write(`lastSuccessfulEvent ${lastSuccessfulEvent}   \n`);
   if (!workflow_id) {
     workflow_id = await octokit.request(`GET /repos/${owner}/${repo}/actions/runs/${run_id}`, {
       owner,
@@ -136,6 +143,8 @@ async function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, la
     event: lastSuccessfulEvent,
     status: 'success'
   }).then(({ data: { workflow_runs } }) => workflow_runs.map(run => run.head_sha));
+
+  process.stdout.write(`shas ${shas}   \n`);
 
   return await findExistingCommit(shas);
 }
