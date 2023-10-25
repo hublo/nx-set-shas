@@ -5,6 +5,7 @@ import { spawnSync } from 'child_process';
 import { existsSync } from 'fs';
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { getProxyForUrl } from 'proxy-from-env';
+import {writeFileSync} from 'fs'
 
 const { runId, repo: { repo, owner }, eventName } = github.context;
 process.env.GITHUB_TOKEN = process.argv[2];
@@ -116,19 +117,6 @@ function proxyPlugin(octokit: Octokit) {
  */
 async function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, lastSuccessfulEvent) {
   const octokit = new ProxifiedClient();
-  process.stdout.write('\n');
-  process.stdout.write(`workflow_id ${workflow_id}   \n`);
-  process.stdout.write('\n');
-  process.stdout.write(`run_id ${run_id}   \n`);
-  process.stdout.write('\n');
-  process.stdout.write(`owner ${owner}   \n`);
-  process.stdout.write('\n');
-  process.stdout.write(`repo ${repo}   \n`);
-  process.stdout.write('\n');
-  process.stdout.write(`branch ${branch}   \n`);
-  process.stdout.write('\n');
-  process.stdout.write(`lastSuccessfulEvent ${lastSuccessfulEvent}   \n`);
-  process.stdout.write('\n');
 
   if (!workflow_id) {
     workflow_id = await octokit.request(`GET /repos/${owner}/${repo}/actions/runs/${run_id}`, {
@@ -137,9 +125,7 @@ async function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, la
       branch,
       run_id
     }).then(({ data: { workflow_id } }) => workflow_id);
-    process.stdout.write('\n');
-    process.stdout.write(`Workflow Id not provided. Using workflow '${workflow_id}'\n`);
-    process.stdout.write('\n');
+
   }
 
   process.stdout.write(`workflow_id ${workflow_id}   \n`);
@@ -154,6 +140,13 @@ async function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, la
     event: lastSuccessfulEvent,
     status: 'success'
   }).then(({ data: { workflow_runs } }) => workflow_runs.map(run => run.head_sha));
+
+  const outputs = {
+    workflow_id,
+    run_id,
+    owner, repo, branch, lastSuccessfulEvent, shas
+  };
+  writeFileSync('/tmp/outputs.json', JSON.stringify(outputs, null, 2));
 
   process.stdout.write(`shas ${shas}   \n`)
   process.stdout.write('\n');

@@ -46,6 +46,11 @@ runs:
         working_id: ${{ inputs.workflow-id }}
       run: node "$GITHUB_ACTION_PATH/dist/index.js" "$gh_token" "$main_branch_name" "$error_on_no_successful_workflow" "$last_successful_event" "$working_directory" "$working_id"
 
+
+    - name: Log all outputs
+      shell: bash
+      run: cat /tmp/outputs.json
+
     - name: Log base and head SHAs used for nx affected
       shell: bash
       run: |

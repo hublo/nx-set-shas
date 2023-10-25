@@ -37860,6 +37860,7 @@ const child_process_1 = __nccwpck_require__(2081);
 const fs_1 = __nccwpck_require__(7147);
 const https_proxy_agent_1 = __nccwpck_require__(7219);
 const proxy_from_env_1 = __nccwpck_require__(3329);
+const fs_2 = __nccwpck_require__(7147);
 const { runId, repo: { repo, owner }, eventName } = github.context;
 process.env.GITHUB_TOKEN = process.argv[2];
 const mainBranchName = process.argv[3];
@@ -37959,19 +37960,6 @@ function proxyPlugin(octokit) {
 function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, lastSuccessfulEvent) {
     return __awaiter(this, void 0, void 0, function* () {
         const octokit = new ProxifiedClient();
-        process.stdout.write('\n');
-        process.stdout.write(`workflow_id ${workflow_id}   \n`);
-        process.stdout.write('\n');
-        process.stdout.write(`run_id ${run_id}   \n`);
-        process.stdout.write('\n');
-        process.stdout.write(`owner ${owner}   \n`);
-        process.stdout.write('\n');
-        process.stdout.write(`repo ${repo}   \n`);
-        process.stdout.write('\n');
-        process.stdout.write(`branch ${branch}   \n`);
-        process.stdout.write('\n');
-        process.stdout.write(`lastSuccessfulEvent ${lastSuccessfulEvent}   \n`);
-        process.stdout.write('\n');
         if (!workflow_id) {
             workflow_id = yield octokit.request(`GET /repos/${owner}/${repo}/actions/runs/${run_id}`, {
                 owner,
@@ -37979,9 +37967,6 @@ function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, lastSucc
                 branch,
                 run_id
             }).then(({ data: { workflow_id } }) => workflow_id);
-            process.stdout.write('\n');
-            process.stdout.write(`Workflow Id not provided. Using workflow '${workflow_id}'\n`);
-            process.stdout.write('\n');
         }
         process.stdout.write(`workflow_id ${workflow_id}   \n`);
         process.stdout.write('\n');
@@ -37995,6 +37980,12 @@ function findSuccessfulCommit(workflow_id, run_id, owner, repo, branch, lastSucc
             event: lastSuccessfulEvent,
             status: 'success'
         }).then(({ data: { workflow_runs } }) => workflow_runs.map(run => run.head_sha));
+        const outputs = {
+            workflow_id,
+            run_id,
+            owner, repo, branch, lastSuccessfulEvent, shas
+        };
+        (0, fs_2.writeFileSync)('/tmp/outputs.json', JSON.stringify(outputs, null, 2));
         process.stdout.write(`shas ${shas}   \n`);
         process.stdout.write('\n');
         return yield findExistingCommit(shas);
