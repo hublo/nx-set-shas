@@ -37886,6 +37886,9 @@ let BASE_SHA;
     if ((['pull_request', 'pull_request_target'].includes(eventName) && !github.context.payload.pull_request.merged) ||
         eventName == 'merge_group') {
         try {
+            process.stdout.write('\n');
+            process.stdout.write(`WARNING: IN SHIT\n`);
+            process.stdout.write('\n');
             const mergeBaseRef = yield findMergeBaseRef();
             const baseResult = (0, child_process_1.spawnSync)('git', ['merge-base', `origin/${mainBranchName}`, mergeBaseRef], { encoding: 'utf-8' });
             BASE_SHA = baseResult.stdout;
@@ -37897,6 +37900,9 @@ let BASE_SHA;
     }
     else {
         try {
+            process.stdout.write('\n');
+            process.stdout.write(`WARNING: IN ELSE SHIT\n`);
+            process.stdout.write('\n');
             BASE_SHA = yield findSuccessfulCommit(workflowId, runId, owner, repo, mainBranchName, lastSuccessfulEvent);
         }
         catch (e) {
